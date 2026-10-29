@@ -184,20 +184,96 @@ async function loadHistory() {
   }
 }
 
+// ---------- Leaderboard ----------
+
+function leaderboardRow(entry) {
+  const tr = document.createElement("tr");
+  if (entry.isMe) tr.className = "me";
+  const cells = [entry.rank, entry.displayName, entry.average.toFixed(1), entry.answered, entry.streak];
+  cells.forEach((value, i) => {
+    const td = document.createElement("td");
+    td.textContent = value;
+    if (i === 1) td.className = "name";
+    tr.appendChild(td);
+  });
+  return tr;
+}
+
+async function loadLeaderboard() {
+  try {
+    const { top, pinned, needed } = await api("/api/leaderboard");
+    $("lb-body").replaceChildren(...top.map(leaderboardRow));
+    $("lb-pinned").replaceChildren(...(pinned ? [leaderboardRow(pinned)] : []));
+    $("lb-empty").classList.toggle("hidden", top.length > 0);
+    $("lb-needed").classList.toggle("hidden", !needed);
+    $("lb-needed").textContent = `Answer ${needed} more question${needed === 1 ? "" : "s"} to join the leaderboard.`;
+  } catch (err) {
+    $("lb-empty").textContent = err.message;
+    $("lb-empty").classList.remove("hidden");
+  }
+}
+
+// ---------- Sign-in ----------
+
+let me = null;
+
+async function join(event) {
+  event.preventDefault();
+  $("join-error").classList.add("hidden");
+  $("join-btn").disabled = true;
+  try {
+    const { player } = await api("/api/join", {
+      method: "POST",
+      body: JSON.stringify({
+        name: $("name-input").value,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }),
+    });
+    me = player;
+    $("signed-in-as").textContent = `Playing as ${me.displayName}`;
+    location.hash = "#today";
+    route();
+  } catch (err) {
+    $("join-error").textContent = err.message;
+    $("join-error").classList.remove("hidden");
+  } finally {
+    $("join-btn").disabled = false;
+  }
+}
+
 // ---------- Navigation ----------
 
+const VIEWS = ["join", "today", "leaderboard", "history"];
+
 function route() {
-  const view = location.hash === "#history" ? "history" : "today";
-  $("view-today").classList.toggle("hidden", view !== "today");
-  $("view-history").classList.toggle("hidden", view !== "history");
+  let view = location.hash.slice(1);
+  if (!VIEWS.includes(view) || view === "join") view = "today";
+  // The leaderboard is public; everything else needs a display name first.
+  if (!me && view !== "leaderboard") view = "join";
+
+  for (const v of VIEWS) $("view-" + v).classList.toggle("hidden", v !== view);
   document.querySelectorAll("nav a").forEach((a) => {
     a.classList.toggle("active", a.dataset.view === view);
   });
-  if (view === "history") loadHistory();
+
+  if (view === "join") $("name-input").focus();
+  else if (view === "leaderboard") loadLeaderboard();
+  else if (view === "history") loadHistory();
   else loadToday();
 }
 
+async function start() {
+  try {
+    ({ player: me } = await api("/api/me"));
+  } catch {
+    me = null;
+  }
+  if (me) $("signed-in-as").textContent = `Playing as ${me.displayName}`;
+  route();
+}
+
+$("join-form").addEventListener("submit", join);
 $("reveal-btn").addEventListener("click", reveal);
 $("answer-form").addEventListener("submit", submitAnswer);
 window.addEventListener("hashchange", route);
-route();
+start();

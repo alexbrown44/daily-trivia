@@ -11,11 +11,25 @@
     <h1 class="logo">Daily Trivia</h1>
     <nav>
       <a href="#today" data-view="today">Today</a>
+      <a href="#leaderboard" data-view="leaderboard">Leaderboard</a>
       <a href="#history" data-view="history">My History</a>
     </nav>
   </header>
 
   <main>
+    <!-- JOIN (first visit) -->
+    <section id="view-join" class="view hidden">
+      <form id="join-form" class="card">
+        <h2>Welcome to Daily Trivia</h2>
+        <p class="muted">One question a day, from memory, graded out of 10. Pick a display name to start - it's what other players see on the leaderboard.</p>
+        <label for="name-input">Display name</label>
+        <input id="name-input" type="text" maxlength="24" autocomplete="nickname" placeholder="e.g. Quiz Whiz" required>
+        <button type="submit" class="btn primary" id="join-btn">Start playing</button>
+        <p class="muted small">This browser will remember you. There's no password, so you can't sign in from another device.</p>
+        <p id="join-error" class="error hidden"></p>
+      </form>
+    </section>
+
     <!-- TODAY -->
     <section id="view-today" class="view">
       <p class="date" id="today-date"></p>
@@ -75,8 +89,23 @@
       <p id="error" class="error hidden"></p>
     </section>
 
+    <!-- LEADERBOARD -->
+    <section id="view-leaderboard" class="view hidden">
+      <p class="muted small center">Ranked by average score. Answer at least 3 questions to appear.</p>
+      <p id="lb-needed" class="card center hidden"></p>
+      <table class="leaderboard card">
+        <thead>
+          <tr><th>#</th><th>Player</th><th>Avg</th><th>Played</th><th>Streak</th></tr>
+        </thead>
+        <tbody id="lb-body"></tbody>
+        <tbody id="lb-pinned" class="pinned"></tbody>
+      </table>
+      <p id="lb-empty" class="muted center hidden">No one has answered 3 questions yet.</p>
+    </section>
+
     <!-- HISTORY -->
     <section id="view-history" class="view hidden">
+      <p class="muted small center" id="signed-in-as"></p>
       <div class="stats">
         <div class="stat card"><span class="stat-num" id="s-total">0</span><span class="muted small">answered</span></div>
         <div class="stat card"><span class="stat-num" id="s-average">-</span><span class="muted small">average</span></div>
