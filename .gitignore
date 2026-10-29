@@ -1,0 +1,11 @@
+# Secrets - never upload
+.env
+
+# Libraries - re-downloaded by `npm install`
+node_modules/
+
+# Your local game data
+data.json
+
+# Claude Code settings and skills (not part of the app)
+.claude/

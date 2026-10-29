@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Trivia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="logo">Daily Trivia</h1>
+    <nav>
+      <a href="#today" data-view="today">Today</a>
+      <a href="#history" data-view="history">My History</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TODAY -->
+    <section id="view-today" class="view">
+      <p class="date" id="today-date"></p>
+
+      <!-- Before reveal -->
+      <div id="state-intro" class="card center hidden">
+        <h2>Today's question is waiting</h2>
+        <p class="muted">Answer from memory - no looking it up. You'll have 2 minutes once it's revealed.</p>
+        <button id="reveal-btn" class="btn primary">Reveal question</button>
+      </div>
+
+      <!-- Loading -->
+      <div id="state-loading" class="card center hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Generating your question…</p>
+      </div>
+
+      <!-- Answering -->
+      <div id="state-question" class="hidden">
+        <div class="card">
+          <div class="question-meta">
+            <span class="tag" id="q-category"></span>
+            <span class="timer" id="timer">2:00</span>
+          </div>
+          <p class="question" id="q-text"></p>
+        </div>
+        <form id="answer-form" class="card">
+          <label for="answer-input">Your answer</label>
+          <textarea id="answer-input" rows="2" maxlength="500" placeholder="Type your answer…" required></textarea>
+          <p class="late hidden" id="late-note">Time's up - you can still lock in an answer.</p>
+          <button type="submit" class="btn primary" id="submit-btn">Lock in answer</button>
+        </form>
+      </div>
+
+      <!-- Result -->
+      <div id="state-result" class="hidden">
+        <div class="card center">
+          <p class="tag" id="r-category"></p>
+          <p class="score"><span id="r-score"></span><span class="out-of">/10</span></p>
+          <div class="meter" id="r-meter"></div>
+          <h2 id="r-verdict"></h2>
+          <p id="r-feedback"></p>
+          <p class="muted small" id="r-time"></p>
+        </div>
+        <div class="card">
+          <p class="label">The question</p>
+          <p id="r-question"></p>
+          <p class="label">Your answer</p>
+          <p id="r-user-answer"></p>
+          <p class="label">Correct answer</p>
+          <p class="correct" id="r-answer"></p>
+          <p id="r-summary"></p>
+        </div>
+        <p class="muted center">Come back tomorrow for a new question.</p>
+      </div>
+
+      <p id="error" class="error hidden"></p>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="view-history" class="view hidden">
+      <div class="stats">
+        <div class="stat card"><span class="stat-num" id="s-total">0</span><span class="muted small">answered</span></div>
+        <div class="stat card"><span class="stat-num" id="s-average">-</span><span class="muted small">average</span></div>
+        <div class="stat card"><span class="stat-num" id="s-streak">0</span><span class="muted small">day streak</span></div>
+      </div>
+      <ul id="history-list" class="history"></ul>
+      <p id="history-empty" class="muted center hidden">No answers yet. Your history will appear here.</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
